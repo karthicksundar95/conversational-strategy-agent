@@ -1,0 +1,40 @@
+prompt = f"""
+You are a perception engine helping an AI agent to decide which MCP server(s) are most relevant to a user's query.
+
+🔧 MCP Server Catalog:
+{servers_text}
+
+🧠 User Query:
+"{user_input}"
+
+🎯 Your Tasks:
+- Identify the INTENT of the user's query.
+- Extract important ENTITIES (e.g., company names, numbers, concepts).
+- Suggest a TOOL_HINT if you can guess a useful tool (optional).
+- Pick the most relevant MCP server IDs from the catalog above.
+- ❗CRITICAL: If the user query contains "Your last tool produced this result:" or similar text indicating tool results are already provided, select BOTH "documents" and "websearch" servers. This allows the agent to analyze the provided results and fall back to internet search if needed.
+- ❗❗❗ HIGHEST PRIORITY: For queries about personal information, user context, or previous conversations (e.g., "what is my name?", "what did I tell you?", "what did we discuss?", "remember when I said..."), ALWAYS select "memory" server FIRST. This enables semantic search of historical conversations.
+- ❗PRIORITY: For NEW queries that might be answered from stored documents (e.g., company relationships, historical data, stored information), select "documents" server SECOND (after memory if applicable). Only select "websearch" if the query requires real-time/latest information or if stored documents are unlikely to contain the answer.
+- IMPORTANT: If the query requires web search AND content extraction, select both "websearch" and "documents" servers.
+
+📋 Your Output Format (in JSON):
+{{
+  "intent": "...",
+  "entities": [...],
+  "tool_hint": "...",
+  "selected_servers": ["server1", "server2"]
+}}
+
+✅ Rules:
+- selected_servers must match server IDs exactly (e.g., server1, server2).
+- If none are a clear match, select all servers.
+- ❗CRITICAL: If user query contains "Your last tool produced this result:" (indicating tool results are already provided), ALWAYS select BOTH "documents" and "websearch" servers to allow analysis and fallback.
+- ❗❗❗ HIGHEST PRIORITY: For queries about personal information, user context, or previous conversations (e.g., "what is my name?", "what did I tell you?"), select "memory" server FIRST. The agent will check historical conversations before doing other searches.
+- ❗❗❗ CRITICAL FOR FOLLOW-UP QUESTIONS: If the query contains pronouns like "they", "it", "this company", "that website", or vague references (e.g., "do they offer...", "what about...", "tell me more about..."), select "memory" server FIRST to get context from current session conversations. This helps understand what "they/it/this" refers to.
+- ❗CRITICAL: For NEW queries about companies, relationships, stored data, or historical information, select "documents" server SECOND (after memory if applicable). The agent will check stored documents before doing internet search.
+- For queries requiring real-time/latest information (e.g., "latest news", "current stock price"), select "websearch" server.
+- For web search queries that may need content extraction, select BOTH "websearch" and "documents" servers.
+- Keep output short and clean.
+
+Now generate the output:
+"""

@@ -1,0 +1,53 @@
+[
+  {
+    "timestamp": 1763161899.8595772,
+    "type": "run_metadata",
+    "text": "Started new session with input: can you compare dhoni with sachin? at 2025-11-14T23:11:39.859594",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T23:11:39.859779",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763161926.897217,
+    "type": "run_metadata",
+    "text": "Started new session with input: can you now comapre dhoni with dravid? at 2025-11-14T23:12:06.897233",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T23:12:06.897238",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763161943.8873699,
+    "type": "run_metadata",
+    "text": "Started new session with input: can you add 6 and 10 at 2025-11-14T23:12:23.887386",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T23:12:23.887389",
+      "step": 0
+    }
+  }
+]

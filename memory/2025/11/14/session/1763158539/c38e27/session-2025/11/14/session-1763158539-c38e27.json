@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp": 1763158539.547661,
+    "type": "run_metadata",
+    "text": "Started new session with input: Summarize this page: https://vizuara.ai/ at 2025-11-14T22:15:39.547679",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T22:15:39.547684",
+      "step": 0
+    }
+  }
+]

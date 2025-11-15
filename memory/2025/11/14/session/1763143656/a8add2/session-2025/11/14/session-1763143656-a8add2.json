@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp": 1763143656.805203,
+    "type": "run_metadata",
+    "text": "Started new session with input: which course are we teaching on Canvas LMS? \"/Users/karthicksundar/Documents/learnings/EAG V2/Project9/documents/How to use Canvas LMS.pdf\" at 2025-11-14T18:07:36.805246",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T18:07:36.805762",
+      "step": 0
+    }
+  }
+]

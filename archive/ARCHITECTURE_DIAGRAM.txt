@@ -1,0 +1,243 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    CORTEX-R AGENT ARCHITECTURE                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           ENTRY POINT LAYER                                 │
+│                                                                             │
+│  ┌──────────────┐                                                          │
+│  │  agent.py    │  • User input handling                                    │
+│  │              │  • Session management                                      │
+│  │              │  • Result parsing                                         │
+│  └──────┬───────┘                                                          │
+│         │                                                                    │
+│         ├─────────────────┐                                                 │
+│         │                 │                                                 │
+│  ┌──────▼───────┐  ┌──────▼───────┐                                        │
+│  │  MultiMCP    │  │ AgentContext │                                        │
+│  │              │  │              │                                        │
+│  │ • Server     │  │ • Session ID │                                        │
+│  │   discovery  │  │ • Memory     │                                        │
+│  │ • Tool       │  │ • Profile    │                                        │
+│  │   mapping    │  │ • State      │                                        │
+│  └──────────────┘  └──────────────┘                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         CORE LOOP (AgentLoop)                               │
+│                                                                             │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │  for step in range(max_steps):                                       │  │
+│  │      while lifelines_left >= 0:                                      │  │
+│  │          1. PERCEPTION → Select servers/tools                        │  │
+│  │          2. DECISION → Generate solve() plan                         │  │
+│  │          3. ACTION → Execute in sandbox                              │  │
+│  │          4. Check result → Continue or return                        │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+        ┌───────────────────────────┼───────────────────────────┐
+        │                           │                           │
+        ▼                           ▼                           ▼
+┌───────────────┐         ┌───────────────┐         ┌───────────────┐
+│  PERCEPTION   │         │   DECISION    │         │    ACTION     │
+│   MODULE      │         │    MODULE     │         │    MODULE     │
+├───────────────┤         ├───────────────┤         ├───────────────┤
+│               │         │               │         │               │
+│ • LLM Analysis│         │ • Strategy    │         │ • Sandbox     │
+│ • Intent      │         │   Selection   │         │   Execution   │
+│ • Entities    │         │ • Tool        │         │ • MCP Tool    │
+│ • Server      │         │   Filtering   │         │   Calls       │
+│   Selection   │         │ • Plan        │         │ • Result      │
+│               │         │   Generation  │         │   Formatting  │
+│ Output:       │         │               │         │               │
+│ PerceptionResult│       │ Output:       │         │ Output:       │
+│                │        │ solve() code  │         │ Result string │
+└───────┬────────┘        └───────┬───────┘         └───────┬───────┘
+        │                         │                         │
+        │                         │                         │
+        └─────────────────────────┼─────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         MCP INFRASTRUCTURE                                  │
+│                                                                             │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                │
+│  │ MCP Server 1 │    │ MCP Server 2 │    │ MCP Server 3 │                │
+│  │   (Math)     │    │ (Documents)  │    │ (Web Search) │                │
+│  │              │    │              │    │              │                │
+│  │ • add        │    │ • search_    │    │ • duckduckgo │                │
+│  │ • multiply   │    │   stored_    │    │   _search    │                │
+│  │ • fibonacci  │    │   documents  │    │ • download_  │                │
+│  │ • python_    │    │ • extract_   │    │   raw_html   │                │
+│  │   sandbox    │    │   pdf        │    │              │                │
+│  │ • shell      │    │ • convert_   │    │              │                │
+│  │ • sql        │    │   webpage    │    │              │                │
+│  └──────────────┘    └──────────────┘    └──────────────┘                │
+│         │                    │                    │                        │
+│         └────────────────────┼────────────────────┘                        │
+│                              │                                             │
+│                    ┌─────────▼─────────┐                                   │
+│                    │    MultiMCP       │                                   │
+│                    │                   │                                   │
+│                    │ • Tool discovery  │                                   │
+│                    │ • Tool mapping    │                                   │
+│                    │ • Tool execution │                                   │
+│                    └───────────────────┘                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          MEMORY SYSTEM                                      │
+│                                                                             │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │                    MemoryManager                                      │  │
+│  │                                                                      │  │
+│  │  Storage: memory/YYYY/MM/DD/session-{id}.json                        │  │
+│  │                                                                      │  │
+│  │  MemoryItem Types:                                                   │  │
+│  │  • run_metadata    - Session start/end                               │  │
+│  │  • tool_call       - Tool invocation                                 │  │
+│  │  • tool_output     - Tool results                                    │  │
+│  │  • final_answer    - Task completion                                 │  │
+│  │                                                                      │  │
+│  │  Used by:                                                            │  │
+│  │  • Decision module (context)                                         │  │
+│  │  • Strategy module (fallback tools)                                  │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        MODEL MANAGEMENT                                     │
+│                                                                             │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │                    ModelManager                                       │  │
+│  │                                                                      │  │
+│  │  Supported Models:                                                   │  │
+│  │  • Gemini (Google) - gemini-2.0-flash                                │  │
+│  │  • Ollama (Local)  - phi4, gemma3, qwen2.5, mistral                  │  │
+│  │                                                                      │  │
+│  │  Used by:                                                            │  │
+│  │  • Perception module (intent analysis)                               │  │
+│  │  • Decision module (plan generation)                                 │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         DATA FLOW SUMMARY                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+User Input
+    │
+    ▼
+┌─────────────────┐
+│  AgentContext   │  ← Loads config, creates session
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   AgentLoop     │  ← Orchestrates the cycle
+└────────┬────────┘
+         │
+         ├───► PERCEPTION ──► Select MCP servers ──► Get tools
+         │
+         ├───► DECISION ────► Filter tools ───────► Generate solve()
+         │
+         ├───► ACTION ──────► Execute solve() ────► Call MCP tools
+         │
+         └───► RESULT ──────► FINAL_ANSWER or FURTHER_PROCESSING
+                              │
+                              ▼
+                         Memory Logging
+                              │
+                              ▼
+                         Return to User
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         KEY COMPONENTS                                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Core Modules                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  • agent.py              - Entry point, session management                   │
+│  • core/loop.py          - Main orchestration loop                           │
+│  • core/context.py       - Session state and configuration                   │
+│  • core/session.py       - MCP server management                            │
+│  • core/strategy.py      - Planning strategy selection                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Functional Modules                                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  • modules/perception.py  - Intent analysis and server selection            │
+│  • modules/decision.py    - Plan generation                                 │
+│  • modules/action.py      - Code execution in sandbox                       │
+│  • modules/memory.py      - Persistent session memory                       │
+│  • modules/tools.py       - Tool utilities                                  │
+│  • modules/model_manager.py - LLM interface                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Configuration                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  • config/profiles.yaml   - Agent profile, strategy, MCP servers            │
+│  • config/models.json     - LLM model definitions                           │
+│  • prompts/               - LLM prompt templates                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  MCP Servers                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  • mcp_server_1.py       - Math, Python sandbox, shell, SQL                 │
+│  • mcp_server_2.py       - Document search, PDF extraction, webpages      │
+│  • mcp_server_3.py       - Web search, HTML download                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         STRATEGY MODES                                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+CONSERVATIVE MODE:
+  • One tool call per step
+  • Filtered tools based on perception hint
+  • Simple, predictable execution
+  • Prompt: decision_prompt_conservative.txt
+
+EXPLORATORY MODE:
+  • Multiple tool calls per step
+  • Parallel or Sequential execution
+  • Memory fallback on failure
+  • Prompts: decision_prompt_exploratory_*.txt
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         MEMORY STRUCTURE                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+memory/
+└── YYYY/
+    └── MM/
+        └── DD/
+            └── session-{timestamp}-{uuid}.json
+
+Each session file contains:
+  • run_metadata    - Session start/configuration
+  • tool_call       - Tool invocations
+  • tool_output     - Tool results with success flags
+  • final_answer    - Task completion
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         RESULT TYPES                                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+FINAL_ANSWER: {answer}
+  → Task complete, return to user
+
+FURTHER_PROCESSING_REQUIRED: {content}
+  → Continue loop with new input
+
+[sandbox error: {error}]
+  → Execution failed, retry with lifeline
+

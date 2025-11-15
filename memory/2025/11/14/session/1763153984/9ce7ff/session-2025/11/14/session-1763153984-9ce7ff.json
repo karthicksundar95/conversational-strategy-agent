@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp": 1763153984.4399638,
+    "type": "run_metadata",
+    "text": "Started new session with input: can you tell me what is this company \"https://vizuara.ai/\" at 2025-11-14T20:59:44.439996",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T20:59:44.440253",
+      "step": 0
+    }
+  }
+]

@@ -1,0 +1,87 @@
+[
+  {
+    "timestamp": 1763157775.378274,
+    "type": "run_metadata",
+    "text": "Started new session with input: What do you know about Don Tapscott and Anthony Williams? at 2025-11-14T22:02:55.378318",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T22:02:55.378329",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763157788.6166131,
+    "type": "run_metadata",
+    "text": "Started new session with input: What is the relationship between Gensol and Go-Auto? at 2025-11-14T22:03:08.616649",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T22:03:08.616659",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763157801.1223192,
+    "type": "run_metadata",
+    "text": "Started new session with input: What is the log value of the amount that Anmol singh paid for his DLF apartment via Capbridge?  at 2025-11-14T22:03:21.122364",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T22:03:21.122379",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763157819.757268,
+    "type": "run_metadata",
+    "text": "Started new session with input: compute the value of log(42.94) crore at 2025-11-14T22:03:39.757301",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T22:03:39.757313",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763158127.274406,
+    "type": "run_metadata",
+    "text": "Started new session with input: Summarize this page: https://theschoolof.ai/ at 2025-11-14T22:08:47.274425",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T22:08:47.274430",
+      "step": 0
+    }
+  }
+]

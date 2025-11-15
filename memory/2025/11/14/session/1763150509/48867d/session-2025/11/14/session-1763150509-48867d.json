@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp": 1763150509.905386,
+    "type": "run_metadata",
+    "text": "Started new session with input: hey hi my name is karthick at 2025-11-14T20:01:49.905440",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T20:01:49.905862",
+      "step": 0
+    }
+  }
+]

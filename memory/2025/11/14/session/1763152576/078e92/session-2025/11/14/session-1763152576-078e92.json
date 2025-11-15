@@ -1,0 +1,36 @@
+[
+  {
+    "timestamp": 1763152576.913514,
+    "type": "run_metadata",
+    "text": "Started new session with input: can you tell me what this company does? \"https://vizuara.ai/\" at 2025-11-14T20:36:16.913573",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T20:36:16.914016",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763152784.283849,
+    "type": "run_metadata",
+    "text": "Started new session with input: clear at 2025-11-14T20:39:44.283882",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T20:39:44.283896",
+      "step": 0
+    }
+  }
+]

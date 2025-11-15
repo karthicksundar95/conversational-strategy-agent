@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp": 1763163435.6626508,
+    "type": "run_metadata",
+    "text": "Started new session with input: can you summarize this https://www.seldon.io/managing-realtime-ai-cost-in-production-a-practical-guide/ at 2025-11-14T23:37:15.662678",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T23:37:15.662684",
+      "step": 0
+    }
+  }
+]

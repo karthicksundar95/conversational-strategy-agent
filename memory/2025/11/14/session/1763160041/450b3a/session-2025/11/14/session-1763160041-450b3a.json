@@ -1,0 +1,55 @@
+[
+  {
+    "timestamp": 1763160041.454493,
+    "type": "run_metadata",
+    "text": "Started new session with input: hi how are you? at 2025-11-14T22:40:41.454532",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T22:40:41.454547",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763160044.406476,
+    "type": "tool_output",
+    "text": "Output of direct_llm_response: {'result': \"FINAL_ANSWER: Hi! I'm doing well, thank you for asking. How about you?\"}",
+    "tool_name": "direct_llm_response",
+    "tool_args": {
+      "user_input": "hi how are you?"
+    },
+    "tool_result": {
+      "result": "FINAL_ANSWER: Hi! I'm doing well, thank you for asking. How about you?"
+    },
+    "final_answer": null,
+    "tags": [
+      "greeting",
+      "simple_query"
+    ],
+    "success": true,
+    "metadata": {}
+  },
+  {
+    "timestamp": 1763160294.680489,
+    "type": "run_metadata",
+    "text": "Started new session with input: clear at 2025-11-14T22:44:54.680549",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T22:44:54.680568",
+      "step": 0
+    }
+  }
+]

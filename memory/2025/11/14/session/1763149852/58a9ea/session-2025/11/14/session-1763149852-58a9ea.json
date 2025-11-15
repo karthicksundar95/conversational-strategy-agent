@@ -1,0 +1,36 @@
+[
+  {
+    "timestamp": 1763149852.320006,
+    "type": "run_metadata",
+    "text": "Started new session with input: hi how are you?my name is karthick at 2025-11-14T19:50:52.320070",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T19:50:52.320525",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1763149909.9989471,
+    "type": "run_metadata",
+    "text": "Started new session with input: do you know 5+4 is? at 2025-11-14T19:51:49.998991",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T19:51:49.999010",
+      "step": 0
+    }
+  }
+]

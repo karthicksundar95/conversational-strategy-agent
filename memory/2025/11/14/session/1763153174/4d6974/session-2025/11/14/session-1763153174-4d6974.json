@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp": 1763153174.955424,
+    "type": "run_metadata",
+    "text": "Started new session with input: hey can you visit this website \"https://vizuara.ai/\" and check what they actually do? at 2025-11-14T20:46:14.955472",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-11-14T20:46:14.955851",
+      "step": 0
+    }
+  }
+]

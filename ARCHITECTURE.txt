@@ -1,0 +1,216 @@
+Cortex-R Architecture Notes
+============================
+
+It's basically an AI agent that can use tools to solve tasks. The main idea is it follows a Perception -> Decision -> Action loop, which I think works pretty well.
+
+How it works (rough overview)
+------------------------------
+
+The agent takes user input, figures out what tools it needs, generates some Python code to use those tools, executes it, and returns results. Pretty straightforward but there's a lot of moving parts.
+
+I'm using MCP (Model Context Protocol) servers to handle different types of tools - math stuff, document processing, web search, etc. Each server exposes tools that the agent can call.
+
+The Flow
+---------
+
+When a user asks something:
+
+1. First, there's a historical check layer that looks at past conversations. This was added later but it's really useful - if we already answered something similar, we can just return that answer directly. Or if there's partial context, we use it.
+
+2. Then the main loop kicks in:
+   - Perception: Uses LLM to figure out what the user wants and which servers/tools might be relevant
+   - Decision: Generates a Python solve() function that calls the right tools
+   - Action: Executes that function in a sandbox and calls the actual tools
+
+3. Results get checked - if it's a FINAL_ANSWER, we're done. If it's FURTHER_PROCESSING_REQUIRED, we loop back with the intermediate results.
+
+4. Everything gets logged to memory and indexed for future searches.
+
+Components
+-----------
+
+agent.py - Entry point
+-----------------------
+
+This is where it all starts. Handles user input, creates sessions, initializes the MCP servers. Also does some guardrail checks on the input before processing.
+
+The flow here is pretty simple:
+- User types something
+- Create AgentContext (holds session state)
+- Run the agent loop
+- Parse and display results
+
+Core Loop (core/loop.py)
+------------------------
+
+This is the heart of the system. The AgentLoop class orchestrates everything.
+
+It runs in steps (max 5 by default, configurable). Each step can retry up to 3 times (lifelines). The loop does:
+
+1. Perception - figure out what tools we need
+2. Decision - generate the solve() function
+3. Action - execute it
+
+If we get FURTHER_PROCESSING_REQUIRED, we continue the loop with that content. If we get FINAL_ANSWER, we're done.
+
+One thing I added recently - if content is already provided (like markdown from a webpage), the loop detects this and uses LLM directly to analyze it instead of trying to generate more tool calls. This prevents infinite loops.
+
+Historical Check (modules/historical_check.py)
+------------------------------------------------
+
+This is a pre-check layer I added. Before going into the main loop, we search historical conversations using semantic search (FAISS).
+
+Three possible outcomes:
+1. DIRECT_ANSWER: We found the exact answer in history - just return it
+2. CONTEXT_AWARE: We found relevant context but need tools to complete - pass context to perception layer
+3. FRESH_APPROACH: Nothing relevant in history - proceed normally
+
+The LLM decides which path to take. I also added logic to detect when the context summary says "doesn't contain" or "not relevant" - in those cases we treat it as FRESH_APPROACH even if the LLM said HAS_CONTEXT. This prevents using irrelevant context.
+
+Perception (modules/perception.py)
+-----------------------------------
+
+Uses LLM to analyze the user query. Returns:
+- intent: what the user wants
+- entities: important things mentioned
+- tool_hint: suggested tool (optional)
+- selected_servers: which MCP servers to use
+- tags: categorization
+
+The perception layer can also receive historical context if available, which helps it make better tool selections.
+
+Decision (modules/decision.py)
+--------------------------------
+
+This generates the actual Python code that will be executed. It uses prompts (like decision_prompt_conservative.txt) to guide the LLM.
+
+The LLM generates a solve() function that:
+- Calls tools via mcp.call_tool()
+- Parses results
+- Returns FINAL_ANSWER or FURTHER_PROCESSING_REQUIRED
+
+I've been iterating on the prompt a lot. Key things:
+- Don't re-call tools if results are already provided
+- Use convert_webpage_url_into_markdown for URLs (not fetch_content)
+- Check stored documents before web search
+- Use provided context values directly (don't re-fetch)
+
+Action (modules/action.py)
+---------------------------
+
+Executes the generated solve() function in a sandbox. Creates an isolated Python module, injects an MCP wrapper that connects to the real tool dispatcher, and runs the code.
+
+There's a limit of 5 tool calls per plan to prevent runaway execution.
+
+Results come back as strings - either FINAL_ANSWER, FURTHER_PROCESSING_REQUIRED, or error messages.
+
+MCP Infrastructure (core/session.py)
+--------------------------------------
+
+Manages connections to MCP servers. The MultiMCP class:
+- Discovers all configured servers on startup
+- Maps tool names to servers
+- Creates connections per tool call (stateless design)
+- Returns results
+
+I have 4 main servers:
+- math: Math operations, string conversions, fibonacci, etc.
+- documents: Document search, PDF extraction, webpage to markdown
+- websearch: Web search, HTML fetching
+- memory: Historical conversation search, answer from history
+
+Memory System (modules/memory.py, modules/conversation_indexer.py)
+----------------------------------------------------------------------
+
+Two parts here:
+
+1. MemoryManager: Stores session memory in JSON files. Tracks tool calls, results, metadata. Organized by date: memory/YYYY/MM/DD/session-{id}.json
+
+2. ConversationIndexer: Uses FAISS for semantic search. Automatically indexes all conversations so we can search them later. Stores embeddings and metadata.
+
+The indexing happens automatically after each conversation completes. The search uses cosine similarity to find relevant past conversations.
+
+Model Manager (modules/model_manager.py)
+-----------------------------------------
+
+Unified interface for LLM calls. Supports:
+- OpenAI (GPT models)
+- Gemini (Google)
+- Ollama (local models)
+
+Configuration comes from config/models.json. API keys from environment variables.
+
+Used by perception, decision, and historical check layers.
+
+Configuration
+--------------
+
+Everything is configured in config/profiles.yaml:
+- Agent name, description
+- Strategy (conservative vs exploratory)
+- Memory settings
+- LLM selection
+- MCP server definitions
+
+Some Design Decisions
+-----------------------
+
+Stateless MCP connections: Each tool call creates a new connection. Simpler, more reliable, but slight overhead. I might optimize this later if needed.
+
+Sandboxed execution: Generated code runs in isolated module. Only safe built-ins (json, re) are available. MCP wrapper provides controlled tool access.
+
+Lifeline retries: Automatic retries on failure. Prevents giving up too easily but also prevents infinite loops.
+
+Prompt-based planning: The LLM generates the tool-calling code. No hardcoded logic for "if query contains X, use tool Y". More flexible but requires good prompts.
+
+Historical context integration: This was a big addition. The system now checks history first, uses context when available, and only does fresh searches when needed. Makes it much smarter about reusing information.
+
+Things I've Fixed
+-----------------
+
+There were some bugs early on:
+- Code extraction from LLM responses (had to handle markdown properly)
+- Infinite loops when results were provided (now detects and uses LLM directly)
+- Wrong tool selection for URLs (now explicitly uses convert_webpage_url_into_markdown)
+- Not checking stored docs before web search (now prioritizes local search)
+
+See BUG_FIX_REPORT.md for details.
+
+Future Ideas
+------------
+
+- Connection pooling for MCP servers (reduce overhead)
+- Streaming responses (show results as they come)
+- Better memory summarization for long sessions
+- More sophisticated tool selection logic
+- Maybe add some visualization of what the agent is doing
+
+File Structure
+---------------
+
+agent.py                    # Entry point
+core/
+  loop.py                   # Main orchestration loop
+  context.py                # Session state management
+  session.py                # MCP server management
+  strategy.py               # Planning strategies
+modules/
+  perception.py             # Intent analysis
+  decision.py               # Plan generation
+  action.py                 # Code execution
+  memory.py                 # Session memory
+  conversation_indexer.py  # Semantic search indexing
+  model_manager.py          # LLM interface
+  tools.py                  # Utilities
+  guardrail.py              # Security checks
+  historical_check.py       # Pre-check layer
+  mcp_server_memory.py       # Memory MCP server
+config/
+  profiles.yaml             # Main config
+  models.json               # LLM configs
+prompts/
+  perception_prompt.txt     # Perception prompt
+  decision_prompt_conservative.txt  # Decision prompt
+
+That's basically it. The system is working pretty well now. The historical check layer was a big improvement - makes the agent feel much smarter about reusing information.
+
