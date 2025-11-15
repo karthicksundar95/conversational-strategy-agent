@@ -1,4 +1,4 @@
-# 🧠 Cortex-R Agent
+# 🧠 CConversational Strategy Agent
 
 A reasoning-driven AI agent system that uses a **Perception → Decision → Action** loop to solve complex tasks. The agent leverages multiple MCP (Model Context Protocol) servers, maintains session-based memory with semantic search, and uses LLM-based planning to generate executable Python code.
 
